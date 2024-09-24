@@ -1,0 +1,50 @@
+= 1.0.7 =
+Release date 10 June 2024
+
+ * Dev: Tested up to WordPress 6.5
+ * Dev: Updated internal libraries
+ * Dev: Updated the classes to use barn2-lib 2.0
+ * Dev: Tested up to PHP 8.2
+ * Fix: Setup wizard runs after every activation
+
+= 1.0.6 =
+Release date 14 November 2023
+
+ * Tested up to WordPress 6.4
+ * Updated internal libraries
+
+= 1.0.5 =
+Release date 14 Aug 2023
+
+ * Update internal libraries
+ * Tested up to WordPress 6.3
+
+= 1.0.4 = 
+Release date 24 May 2024
+
+ * Dev: Updated webpack configuration 
+
+= 1.0.3 =
+Release date 17 October 2022
+
+ * Fix: The 'Documents' wp-admin menu would not be open when editing a category.
+ * Dev: Updated Barn2 libraries and dependencies.
+ * Dev: Tested up to WordPress 6.0.2.
+
+= 1.0.2 =
+Release date 9 May 2022
+
+ * Dev: Increased minimum rerquired WordPress version to 5.2.
+ * Dev: Updated Barn2 libraries and dependencies.
+ * Dev: Tested up to WordPress 6.0.1.
+
+= 1.0.1 =
+Release date 9 May 2022
+
+ * Dev: Updated Barn2 libraries and dependencies.
+ * Dev: Tested up to WordPress 5.9.3.
+
+= 1.0 =
+Release date 5 April 2022
+
+ * Initial release.
