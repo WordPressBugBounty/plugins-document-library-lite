@@ -1,0 +1,1 @@
+# plugins-document-library-lite
