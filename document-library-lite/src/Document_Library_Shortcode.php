@@ -18,6 +18,13 @@ class Document_Library_Shortcode implements Registerable, Standard_Service {
 	const SHORTCODE = 'doc_library';
 
 	/**
+	 * Stores the number of tables on this page. Used to generate the table ID.
+	 *
+	 * @var int
+	 */
+	private static $table_count = 1;
+
+	/**
 	 * {@inheritdoc}
 	 */
 	public function register() {
@@ -33,13 +40,52 @@ class Document_Library_Shortcode implements Registerable, Standard_Service {
 	 */
 	public function do_shortcode( $atts, $content = '' ) {
 		// Parse attributes
-
 		$atts = Options::handle_shortcode_attribute_aliases( $atts );
 		$atts = shortcode_atts( Options::get_defaults(), $atts, self::SHORTCODE );
 
+		$table = new Simple_Document_Library( $atts );
+		
+		// Load the scripts and styles.
+		if ( apply_filters( 'document_library_table_load_scripts', true ) ) {
+
+			$script_params = [
+				'ajax_url'    => admin_url( 'admin-ajax.php' ),
+				'ajax_nonce'  => 'document-library',
+				'ajax_action' => 'dll_load_posts',
+				'lazy_load'   => $table->args['lazy_load'],
+				'columns'	  => $table->get_columns(),
+				'args'        => $table->args
+			];
+
+			wp_add_inline_script(
+				'document-library',
+				sprintf( 'var document_library_params = %s;', wp_json_encode( apply_filters( 'document_library_script_params', $script_params ) ) ),
+				'before'
+			);
+
+			wp_enqueue_style( 'document-library' );
+			wp_enqueue_script( 'document-library' );
+		}
+
+		Frontend_Scripts::load_photoswipe_resources( $table->args['lightbox'] );
+
 		// Create table and return output
-		$table = new Simple_Document_Library();
-		return $table->get_table( $atts );
+		ob_start(); ?>
+		<input type="hidden" name="category-search-<?php echo $table->get_id() ?>" value="" class="category-search-<?php echo $table->get_id() ?>">
+		<table <?php echo $table->get_attributes() ?>>
+			<?php
+			echo $table->get_headers();
+			?>
+			<tbody>
+				<?php
+				if( ! $table->args['lazy_load'] ) {
+					echo $table->get_table( 'html' );
+				}
+				?>
+			</tbody>
+		</table>
+		<?php 
+		return ob_get_clean();
 	}
 
 }

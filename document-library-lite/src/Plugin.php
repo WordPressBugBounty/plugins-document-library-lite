@@ -40,7 +40,7 @@ class Plugin extends Simple_Plugin {
 				'version'            => $version,
 				'file'               => $file,
 				'settings_path'      => 'admin.php?page=document_library',
-				'documentation_path' => 'kb/document-library-wordpress-documentation/?utm_source=settings&utm_medium=settings&utm_campaign=settingsinline&utm_content=dlw-settings'
+				'documentation_path' => 'kb/document-library-wordpress-documentation/?utm_source=settings&utm_medium=settings&utm_campaign=settingsinline&utm_content=dlw-settings',
 			]
 		);
 	}
@@ -50,13 +50,14 @@ class Plugin extends Simple_Plugin {
 	 */
 	public function maybe_load_plugin() {
 		// Don't load plugin if Pro version active
-		if ( ! Util::is_barn2_plugin_active('\\Barn2\\Plugin\\Posts_Table_Pro\\dlp') ) {
-      add_action('after_setup_theme', [$this, 'start_standard_services']);
+		if ( ! Util::is_barn2_plugin_active( '\\Barn2\\Plugin\\Posts_Table_Pro\\dlp' ) ) {
+			add_action( 'after_setup_theme', [ $this, 'start_standard_services' ] );
 		}
 	}
 
 	public function add_services() {
 		$this->add_service( 'plugin_setup', new Plugin_Setup( $this->get_file(), $this ), true );
+		$this->add_service( 'ajax_handler', new Table\Ajax_Handler() );
 		$this->add_service( 'wizard', new Setup_Wizard( $this ) );
 		$this->add_service( 'post_type', new Post_Type() );
 		$this->add_service( 'taxonomies', new Taxonomies() );
@@ -64,7 +65,5 @@ class Plugin extends Simple_Plugin {
 		$this->add_service( 'scripts', new Frontend_Scripts( $this ) );
 		$this->add_service( 'review_notice', new Review_Notice( $this ) );
 		$this->add_service( 'admin', new Admin\Admin_Controller( $this ) );
-
 	}
-
 }

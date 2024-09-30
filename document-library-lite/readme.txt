@@ -5,7 +5,7 @@ Tags: document library, file manager, download manager, document management, med
 Requires at least: 6.1
 Tested up to: 6.6
 Requires PHP: 7.4
-Stable tag: 1.0.7
+Stable tag: 1.1.0
 License: GPL-3.0
 License URI: https://www.gnu.org/licenses/gpl.html
 
@@ -59,12 +59,11 @@ Our [Pro version](https://barn2.com/wordpress-plugins/document-library-pro/?utm_
 * **Control which downloads to list** - Display documents based on additional factors including author, post type, taxonomy term, custom field, year, month, day, or ID. You can also exclude documents from the file manager by ID or category.
 * **Filter dropdowns** - Make it easier for people to find specific documents by adding filter dropdowns for categories, tags and taxonomies.
 * **Standalone document search** - As well as the AJAX search box above the document library, you can use the ‘Document search’ widget or [doc_search] shortcode to add a search box anywhere on your site. For example, you can use this to display a ‘Find Downloads’ search box to the homepage, site header, or sidebar.
-* **Multiple button styles** - Choose from a download button, file type icon, text link, or button with icon.
 * **Flexible document links** - Control the links in your WordPress document library including choosing which columns are clickable and opening links in a new tab.
 * **Multiple document download** - Allow users to select multiple documents and download them together in a handy zip file.
 * **Instant document preview** - Display ‘Preview’ buttons so that users can view documents without downloading them.
 * **Display audio and video** - As well as downloadable documents, display embedded audio and video players directly in the WordPress document library.
-* **Lazy load** - Enable AJAX and caching to list unlimited documents with no performance limitations.
+* **Caching** - Speed up load times with built-in caching.
 * **Compatibility with third party plugins** - Tested with [dozens of other plugins](https://barn2.com/kb/dlp-plugin-compatibility/?utm_source=wporg&utm_medium=freeplugin&utm_campaign=freepluginwporg&utm_content=dlw-wporg).
 * **And much more** - PLUS get dozens of extra features for added flexibility, such as the ability to show and hide each part of the WordPress download manager, customize the colors, and more.
 
@@ -85,12 +84,14 @@ For more flexibility, you can use the `[doc_library]` shortcode to list differen
 * Built-in ‘Document Library’ page which automatically lists all your downloads.
 * `[doc_library]` shortcode for added flexibility.
 * List documents in a table with sortable columns.
+* Choice of 6 styles for your document download links including buttons, download icons, file type icons, and text.
 * Instant AJAX search box to find documents more quickly.
 * 'Search on click' feature to filter the WordPress file manager by clicking on a document category.
 * Display the number of documents in the table, and allow users to change this number.
 * For easier WordPress document management, you can filter the Media Library to view document files only.
 * Structure the download manager into categories.
 * Choose the number of downloads per page in the document library.
+* Optional lazy load setting to list unlimited documents with no performance limitations.
 * Change how the WordPress document library is sorted, and customize the sort order for your file manager.
 * Display the document featured image and allow users to open the image and view it in a lightbox.
 * Configure your file manager centrally on the plugin settings page, and instantly update all your document lists (except where you have overridden specific options in the shortcode).
@@ -107,12 +108,13 @@ Options for the `[doc_library]` shortcode:
 * **status** - List documents based on their status (e.g. published/draft/private).
 * **lightbox** - Enable or disable the feature which opens document featured images in a lightbox modal window.
 * **docs_per_page** - Change the number of documents on each page of the library.
+* **link_style** - Choose the style of the document download links. This can be any of the following: button, button_icon_text, button_icon, icon_only, icon, or text.
+* **lazy_load** - List unlimited documents with no performance limitations.
 * **sort_by** - Override the sort order of the WordPress download manager library.
 * **sort_order** - Choose whether files are ordered alphabetically in ascending or descending order.
 * **scroll_offset** - If your theme has a sticky header then you can use this option to ensure that users are jumped to the correct point of the page when they use the pagination buttons at the bottom of the WordPress document library.
 * **wrap** - By default, if the document library contains too much text to fit on one row then it wraps onto multiple rows. If you prefer, then you can truncate the text and ensure that each download only takes up 1 row of the library. This helps to save space if you have a large download manager table.
 * **search_on_click** - Allow users to click on a category in the ‘Document categories’ column in order to filter the download library by that column.
-* **show_footer** - Show or hide the footer row of the file manager.
 
 For example: `[doc_library doc_category="meetings" content="title,content,link" sort_by="date"]`
 View the [full documentation](https://barn2.com/kb/document-library-wordpress-documentation?utm_source=wporg&utm_medium=freeplugin&utm_campaign=freepluginwporg&utm_content=dlw-wporg#doc-library-shortcode), check out the [demo](https://documentlibrary-free.barn2.com/), and if you need more features then have a look at [Document Library Pro](https://barn2.com/wordpress-plugins/document-library-pro/?utm_source=wporg&utm_medium=freeplugin&utm_campaign=freepluginwporg&utm_content=dlw-wporg).
@@ -203,14 +205,13 @@ Please report any security bugs through the [Patchstack Vulnerability Disclosure
 
 == Changelog ==
 
-= 1.0.7 =
-Release date 13 June 2024
+= 1.1.0 =
+Release date 25 September 2024
 
-* Dev: Tested up to WordPress 6.5
+* New: Added the link style option
+* New: Added the lazy load option
+* Dev: Added the E2E tests
+* Dev: Tested up to WordPress 6.6.2
 * Dev: Updated internal libraries
-* Dev: Updated the classes to use barn2-lib 2.0
-* Dev: Tested up to PHP 8.2
-* Fix: Setup wizard runs after every activation
-
 
 See changelog.txt for more details.
