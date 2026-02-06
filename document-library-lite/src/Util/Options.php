@@ -55,7 +55,13 @@ final class Options {
 		'accessing_documents',
 		'multi_download_button',
 		'multi_download_text',
-		'design'
+		'design',
+		'text_links_new_tab',
+		'accent_insensitive',
+		'diacritics_sort',
+		'responsive_display',
+		'custom_filters',
+		'search_results_page'
 	];
 
 	/**
@@ -112,6 +118,7 @@ final class Options {
 			'link_text'       => __( 'Download', 'document-library-lite' ),
 			'lightbox'        => false,
 			'link_style'	  => 'button',
+			'link_icon'       => false,
 			'rows_per_page'   => 20,
 			'sort_by'         => 'date',
 			'sort_order'      => '',

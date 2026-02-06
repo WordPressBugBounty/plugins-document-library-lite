@@ -7,6 +7,7 @@ use	Barn2\Plugin\Document_Library\Dependencies\Lib\Registerable;
 use	Barn2\Plugin\Document_Library\Dependencies\Lib\Service\Standard_Service;
 use	Barn2\Plugin\Document_Library\Dependencies\Lib\Conditional;
 use	Barn2\Plugin\Document_Library\Dependencies\Lib\Util;
+use Barn2\Plugin\Document_Library\Dependencies\Lib\Admin\Settings_Util;
 
 /**
  * This class handles our plugin settings page in the admin.
@@ -56,10 +57,12 @@ class Settings implements Standard_Service, Registerable, Conditional {
 	 */
 	private function get_settings_tabs() {
 		$settings_tabs = [
-			Settings_Tab\General::TAB_ID         => new Settings_Tab\General( $this->plugin ),
-			Settings_Tab\Document_Table::TAB_ID  => new Settings_Tab\Document_Table( $this->plugin ),
-			Settings_Tab\Document_Grid::TAB_ID   => new Settings_Tab\Document_Grid( $this->plugin ),
-			Settings_Tab\Single_Document::TAB_ID => new Settings_Tab\Single_Document( $this->plugin ),
+			Settings_Tab\General::TAB_ID          => new Settings_Tab\General( $this->plugin ),
+			Settings_Tab\Display::TAB_ID          => new Settings_Tab\Display( $this->plugin ),
+			Settings_Tab\Search::TAB_ID           => new Settings_Tab\Search( $this->plugin ),
+			Settings_Tab\Design::TAB_ID           => new Settings_Tab\Design( $this->plugin ),
+			Settings_Tab\Single_Document::TAB_ID  => new Settings_Tab\Single_Document( $this->plugin ),
+			Settings_Tab\Advanced::TAB_ID         => new Settings_Tab\Advanced( $this->plugin ),
 		];
 
 		return $settings_tabs;
@@ -100,14 +103,21 @@ class Settings implements Standard_Service, Registerable, Conditional {
 	public function render_settings_page() {
 		$active_tab = filter_input( INPUT_GET, 'tab', FILTER_SANITIZE_FULL_SPECIAL_CHARS ) ?? 'general';
 		?>
+		<div class='barn2-layout__header'>
+			<div class="barn2-layout__header-wrapper">
+				<h3 class='barn2-layout__header-heading'>
+					<?php esc_html_e( 'Document Library Lite', 'document-library-lite' ); ?>
+				</h3>
+				<div class="links-area">
+					<?php $this->support_links(); ?>
+				</div>
+			</div>
+		</div>
 		<div class="wrap dlw-settings">
 
-			<?php if ( in_array( $active_tab, [ 'general', 'document_libraries' ], true ) ) { ?>
+			<?php if ( in_array( $active_tab, [ 'general', 'display', 'search', 'advanced' ], true ) ) { ?>
 				<?php do_action( 'barn2_before_plugin_settings', $this->plugin->get_id() ); ?>
 			<?php } ?>
-
-
-			<h1><?php esc_html_e( 'Document Library Lite Settings', 'document-library-lite' ); ?></h1>
 
 			<h2 class="nav-tab-wrapper">
 				<?php
@@ -129,19 +139,32 @@ class Settings implements Standard_Service, Registerable, Conditional {
 				do_settings_sections( $this->registered_settings[ $active_tab ]::MENU_SLUG );
 				?>
 
-				<?php if ( in_array( $active_tab, [ 'general', 'document_libraries' ], true ) ) { ?>
+				<?php if ( in_array( $active_tab, [ 'general', 'display', 'search', 'advanced' ], true ) ) { ?>
 					<p class="submit">
-						<input name="Submit" type="submit" name="submit" class="button button-primary" value="<?php esc_attr_e( 'Save Changes', 'document-library-lite' ); ?>" />
+						<input name="Submit" type="submit" name="submit" class="button button-primary" value="<?php esc_attr_e( 'Save changes', 'document-library-lite' ); ?>" />
 					</p>
 				<?php } ?>
 			</form>
 
 
-			<?php if ( in_array( $active_tab, [ 'general', 'document_libraries' ], true ) ) { ?>
+			<?php if ( in_array( $active_tab, [ 'general', 'display', 'search', 'advanced' ], true ) ) { ?>
 				<?php do_action( 'barn2_after_plugin_settings', $this->plugin->get_id() ); ?>
 			<?php } ?>
 
 		</div>
 		<?php
+	}
+
+	/**
+	 * Support links for the settings page.
+	 *
+	 * @return void
+	 */
+	public function support_links() {
+		printf(
+			'<p>%s</p><p>%s</p>',
+			Settings_Util::get_help_links( $this->plugin ), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			''
+		);
 	}
 }

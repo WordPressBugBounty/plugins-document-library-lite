@@ -52,6 +52,7 @@ class Admin_Controller implements Registerable, Standard_Service {
 		$this->add_service( 'page/protect', new Page\Protect( $this->plugin ) );
 		$this->add_service( 'page_list', new Page_List() );
 		$this->add_service( 'metabox/document_link', new Metabox\Document_Link() );
+		$this->add_service( 'metabox/document_expiry', new Metabox\Document_Expiry() );
 		$this->add_service( 'media_library', new Media_Library() );
 	}
 
@@ -109,11 +110,13 @@ class Admin_Controller implements Registerable, Standard_Service {
 		// Import and Protect Page
 		if ( $this->str_ends_with( $hook, 'page_dlp_import' ) || $this->str_ends_with( $hook, 'page_dll_protect' ) ) {
 			wp_enqueue_style( 'dlw-admin-import', plugins_url( 'assets/css/admin/document-library-import.css', $this->plugin->get_file() ), [], $this->plugin->get_version(), 'all' );
+			wp_enqueue_style( 'dlw-admin-settings', plugins_url( 'assets/css/admin/document-library-settings.css', $this->plugin->get_file() ), [], $this->plugin->get_version(), 'all' );
 		}
 
 		// Add - Edit Document Page
 		if ( in_array( $hook, [ 'post.php', 'post-new.php' ], true ) && is_object( $screen ) && Post_Type::POST_TYPE_SLUG === $screen->post_type ) {
 			wp_enqueue_media();
+			wp_enqueue_script( 'dlw-popover', $this->plugin->get_dir_url() . 'assets/js/admin/document-library-popover.js', [], $this->plugin->get_version(), true );
 			wp_enqueue_script( 'dlw-admin-post', $this->plugin->get_dir_url() . 'assets/js/admin/document-library-post.js', [ 'jquery' ], $this->plugin->get_version(), true );
 			wp_localize_script(
 				'dlw-admin-post',
@@ -132,7 +135,7 @@ class Admin_Controller implements Registerable, Standard_Service {
 	}
 
 	/**
-	 * Determins if a string ends with another string
+	 * Determines if a string ends with another string
 	 *
 	 * @param string $haystack
 	 * @param string $needle

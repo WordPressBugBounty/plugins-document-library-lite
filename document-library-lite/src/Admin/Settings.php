@@ -71,6 +71,26 @@ class Settings implements Registerable, Standard_Service {
 				'sanitize_callback' => [ $this, 'sanitize_shortcode_settings' ]
 			]
 		);
+
+		register_setting(
+			'document_library_pro_advanced',
+			Options::SHORTCODE_OPTION_KEY,
+			[
+				'type'              => 'string', // array type not supported, so just use string
+				'description'       => 'Document Library Pro advanced settings',
+				'sanitize_callback' => [ $this, 'sanitize_shortcode_settings' ]
+			]
+		);
+
+		register_setting(
+			'document_library_pro_advanced',
+			Options::MISC_OPTION_KEY,
+			[
+				'type'              => 'string', // array type not supported, so just use string
+				'description'       => 'Document Library Pro misc settings',
+				'sanitize_callback' => [ $this, 'sanitize_misc_settings' ]
+			]
+		);
 	}
 
 	/**
@@ -92,7 +112,14 @@ class Settings implements Registerable, Standard_Service {
 	 * @return array
 	 */
 	public function allowed_options( $options ) {
-		$new_options[ Options::GENERAL_OPTION_GROUP ] = [ Options::SHORTCODE_OPTION_KEY ];
+		$new_options = [
+			Options::GENERAL_OPTION_GROUP => [ Options::SHORTCODE_OPTION_KEY, Options::DOCUMENT_FIELDS_OPTION_KEY, Options::DOCUMENT_PAGE_OPTION_KEY ],
+			Options::TABLE_OPTION_GROUP   => [ Options::SHORTCODE_OPTION_KEY ],
+			Options::GRID_OPTION_GROUP    => [ Options::SHORTCODE_OPTION_KEY ],
+			'document_library_pro_display' => [ Options::SHORTCODE_OPTION_KEY ],
+			'document_library_pro_search'  => [ Options::SHORTCODE_OPTION_KEY ],
+			'document_library_pro_advanced' => [ Options::SHORTCODE_OPTION_KEY, Options::MISC_OPTION_KEY ],
+		];
 
 		if ( function_exists( 'add_allowed_options' ) ) {
 			$options = add_allowed_options( $new_options, $options );
@@ -227,11 +254,54 @@ class Settings implements Registerable, Standard_Service {
 				$args['lazy_load'] = false;
 			}
 			$args['lazy_load'] = filter_var( $args['lazy_load'], FILTER_VALIDATE_BOOLEAN );
+		} elseif ( $option_page === 'document_library_pro_advanced' ) {
+			// Lightbox
+			if ( ! isset( $args['lightbox'] ) ) {
+				$args['lightbox'] = false;
+			}
+			$args['lightbox'] = filter_var( $args['lightbox'], FILTER_VALIDATE_BOOLEAN );
+
+			// Lazy load
+			if ( ! isset( $args['lazy_load'] ) ) {
+				$args['lazy_load'] = false;
+			}
+			$args['lazy_load'] = filter_var( $args['lazy_load'], FILTER_VALIDATE_BOOLEAN );
+
+			// Rows Per Page
+			if ( isset( $args['rows_per_page'] ) ) {
+				$args['rows_per_page'] = filter_var(
+					$args['rows_per_page'],
+					FILTER_VALIDATE_INT,
+					[
+						'options' => [
+							'min' => -1
+						]
+					]
+				);
+			}
 		}
 
 		$merge_settings = array_merge( $existing_options, $args );
 
 		return $merge_settings;
+	}
+
+	/**
+	 * Sanitize the misc settings.
+	 *
+	 * @param mixed $args
+	 * @return array
+	 */
+	public function sanitize_misc_settings( $args ) {
+		if ( is_null( $args ) ) {
+			$args = [];
+		}
+
+		if ( isset( $args['cache_expiry'] ) ) {
+			$args['cache_expiry'] = absint( $args['cache_expiry'] );
+		}
+
+		return $args;
 	}
 
 	/**
@@ -258,6 +328,8 @@ class Settings implements Registerable, Standard_Service {
 			'lazy_load',
 			// document tables
 			'columns',
+			// pagination (shared with advanced tab)
+			'rows_per_page',
 		];
 
 		$existing_options = [];

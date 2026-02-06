@@ -3,9 +3,9 @@ Contributors: barn2media
 Donate link: https://barn2.com
 Tags: document library, file manager, download manager, document management, media library
 Requires at least: 6.1
-Tested up to: 6.8
+Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.1.5
+Stable tag: 1.2.0
 License: GPL-3.0
 License URI: https://www.gnu.org/licenses/gpl.html
 
@@ -56,6 +56,8 @@ Our [Pro version](https://barn2.com/wordpress-plugins/document-library-pro/?utm_
 * **Add extra columns** - File size, file type, document excerpt, status, last modified date, author, plus custom fields and custom taxonomies. You can also rename the column headings of the document library. Advanced Custom Fields and ACF Pro support.
 * **Individual document pages** - Create a separate page for each document.
 * **Host documents on third party sites** - As well as displaying files from the Media Library, your WordPress download manager can include documents hosted on third party sites such as Dropbox, Google Drive, and Office 365.
+* **Private document libraries** - Restrict access to any or all of your document libraries either through simple password protection, or to specific roles or use accounts. Either protect the library globally or via category or individual document.
+* **Version control** - Manage multiple versions of the same document, keeping your library organized and up to date.
 * **Control which downloads to list** - Display documents based on additional factors including author, post type, taxonomy term, custom field, year, month, day, or ID. You can also exclude documents from the file manager by ID or category.
 * **Filter dropdowns** - Make it easier for people to find specific documents by adding filter dropdowns for categories, tags and taxonomies.
 * **Standalone document search** - As well as the AJAX search box above the document library, you can use the ‘Document search’ widget or [doc_search] shortcode to add a search box anywhere on your site. For example, you can use this to display a ‘Find Downloads’ search box to the homepage, site header, or sidebar.
@@ -205,10 +207,13 @@ Please report any security bugs through the [Patchstack Vulnerability Disclosure
 
 == Changelog ==
 
-= 1.1.5 = 
-Release date 28 August 2025
+= 1.2.0 = 
+Release date 11 December 2025
 
-* Dev: Updated internal libraries and dependencies
-* Dev: Added translations for popular languages
+* Dev: Enhanced AJAX request security with proper nonce verification
+* Dev: Added input sanitization to prevent XSS attacks
+* Dev: Added premium options and changed the design structure
+* Dev: Updated internal libraries and tested up to WordPress 6.9
+* Fix: Fixed IDOR (Insecure Direct Object Reference) vulnerabilities
 
 See changelog.txt for more details.

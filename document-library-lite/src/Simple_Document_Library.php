@@ -17,6 +17,7 @@ class Simple_Document_Library {
 	public $args         = [];
 	public $post_args    = [];
 	private $total_posts = null;
+	private $table_id    = null;
 	/**
 	 * Stores the number of tables on this page. Used to generate the table ID.
 	 *
@@ -38,8 +39,9 @@ class Simple_Document_Library {
 	 */
 	private static $allowed_columns = [];
 
-	public function __construct( $args ) {
+	public function __construct( $args, $table_id = null ) {
 		$this->args = $this->validate_options( $args );
+		$this->table_id = $table_id ? $table_id : 'document-library-' . self::$table_count;
 		$this->set_post_args();
 	}
 
@@ -56,18 +58,20 @@ class Simple_Document_Library {
 		$this->args['offset']  = isset( $_POST['start'] ) ? intval( $_POST['start'] ) : 0;
 		$this->args['rows_per_page'] = isset( $_POST['length'] ) && intval( $_POST['length'] ) !== -1 ? intval( $_POST['length'] ) : $this->args['rows_per_page'];
 		$this->args['sort_by'] = isset( $_POST['order'] ) ? $columns[$_POST['order'][0]['column']] : $this->get_orderby();
-    	$this->args['sort_order'] = isset( $_POST['order'] ) ? $_POST['order'][0]['dir'] : $this->args['sort_order'];
-    	$this->args['search_value'] = isset( $_POST['search'] ) ? $_POST['search']['value'] : '';
+    	$this->args['sort_order'] = isset( $_POST['order'] ) ? sanitize_key( $_POST['order'][0]['dir'] ) : $this->args['sort_order'];
+    	$this->args['search_value'] = isset( $_POST['search']['value'] ) ? sanitize_text_field( wp_unslash( $_POST['search']['value'] ) ) : '';
 		$this->args['rows_per_page'] = filter_var( $this->args['rows_per_page'], FILTER_VALIDATE_INT );
 
 		if ( $this->args['rows_per_page'] < 1 || ! $this->args['rows_per_page'] ) {
 			$this->args['rows_per_page'] = false;
 		}
 		if( isset( $_POST['category'] ) ) {
-			$this->args['doc_category'] = $_POST['category'];
+			$this->args['doc_category'] = sanitize_text_field( wp_unslash( $_POST['category'] ) );
 		}
 
-		if ( ! in_array( $this->args['sort_by'], Options::get_allowed_columns(), true ) ) {
+		// Validate sort_by against allowed WordPress orderby values
+		$allowed_orderby = [ 'title', 'id', 'date', 'modified', 'menu_order', 'author', 'rand' ];
+		if ( ! in_array( $this->args['sort_by'], $allowed_orderby, true ) ) {
 			$this->args['sort_by'] = Options::get_default_settings()['sort_by'];
 		}
 
@@ -347,8 +351,8 @@ class Simple_Document_Library {
 			$table_class .= ' nowrap';
 		}
 		$table_attributes = sprintf(
-			'id="document-library-%1$u" class="%2$s" data-page-length="%3$u" data-paging="%4$s" data-click-filter="%5$s" data-scroll-offset="%6$s" data-order="[]" cellspacing="0" width="100%%"',
-			self::$table_count,
+			'id="%1$s" class="%2$s" data-page-length="%3$u" data-paging="%4$s" data-click-filter="%5$s" data-scroll-offset="%6$s" cellspacing="0" width="100%%"',
+			esc_attr( $this->table_id ),
 			esc_attr( $table_class ),
 			esc_attr( $this->args['rows_per_page'] ),
 			esc_attr( $paging_attr ),
@@ -430,7 +434,8 @@ class Simple_Document_Library {
 					$row_content['content'] = $this->get_post_content( $_post->ID, $this->args['content_length'] );
 					break;
 				case 'link':
-					$row_content['link'] = $document->get_download_button( $this->args['link_text'], $this->args['link_style'] );
+					$link_icon = isset( $this->args['link_icon'] ) ? $this->args['link_icon'] : false;
+					$row_content['link'] = $document->get_download_button( $this->args['link_text'], $this->args['link_style'], $link_icon );
 					break;
 				default:
 					break;
@@ -483,20 +488,25 @@ class Simple_Document_Library {
 
 	public function validate_options( $args ) {
 		// Validate all the boolean options in the database
-		$boolean_options = [ 'lazy_load', 'lightbox', 'wrap', 'search_on_click' ];
+		$boolean_options = [ 'lazy_load', 'lightbox', 'wrap', 'search_on_click', 'link_icon' ];
 
 		foreach( $boolean_options as $option ) {
-			$args[ $option ] = is_string( $args[ $option ] ) ? $args[ $option ] === "true" : $args[ $option ];
+			if ( isset( $args[ $option ] ) ) {
+				// Handle various truthy values: '1', 1, 'true', true
+				$args[ $option ] = filter_var( $args[ $option ], FILTER_VALIDATE_BOOLEAN );
+			} else {
+				$args[ $option ] = false;
+			}
 		}
 
 		// The post status can only have these values
 		$valid_post_statuses = [ 'publish', 'pending', 'draft', 'future', 'any' ];
 		$args[ 'status' ] = in_array( $args['status'], $valid_post_statuses ) ? $args[ 'status' ] : 'publish';
-		
+			
 		return $args;
 	}
 
 	public function get_id() {
-		return self::$table_count;
+		return $this->table_id;
 	}
 }
