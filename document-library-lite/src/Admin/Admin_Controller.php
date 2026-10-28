@@ -8,6 +8,7 @@ use Barn2\Plugin\Document_Library\Dependencies\Lib\Service\Service_Container;
 use Barn2\Plugin\Document_Library\Dependencies\Lib\Registerable;
 use Barn2\Plugin\Document_Library\Dependencies\Lib\Service\Standard_Service;
 use Barn2\Plugin\Document_Library\Dependencies\Lib\Admin\Plugin_Promo;
+use Barn2\Plugin\Document_Library\Dependencies\Lib\Admin\Sale_Notice;
 use Barn2\Plugin\Document_Library\Dependencies\Lib\Admin\Settings_API_Helper;
 use Barn2\Plugin\Document_Library\Post_Type;
 
@@ -38,6 +39,8 @@ class Admin_Controller implements Registerable, Standard_Service {
 		add_filter( 'plugin_row_meta', [ $this, 'add_pro_version_link' ], 10, 2 );
 		// Admin scripts
 		add_action( 'admin_enqueue_scripts', [ $this, 'settings_page_scripts' ] );
+		// The sale banner design uses an uppercase "OFF" in the title and button.
+		add_filter( 'gettext_barn2-lib', fn( $text ) => str_replace( '%% off', '%% OFF', $text ) );
 	}
 
 	/**
@@ -46,6 +49,18 @@ class Admin_Controller implements Registerable, Standard_Service {
 	public function add_services() {
 		$this->add_service( 'menu', new Menu( $this->plugin ) );
 		$this->add_service( 'plugin_promo', new Plugin_Promo( $this->plugin ) );
+		$this->add_service(
+			'sale_notice',
+			new Sale_Notice(
+				[
+					'plugin_slug' => 'document-library-lite',
+					'plugin_file' => $this->plugin->get_file(),
+					'product_url' => 'https://barn2.com/wordpress-plugins/document-library-pro/',
+					'pro_name'    => 'Document Library Pro',
+					'screens'     => [ 'toplevel_page_document_library' ],
+				]
+			)
+		);
 		$this->add_service( 'settings', new Settings( $this->plugin ) );
 		$this->add_service( 'page/settings', new Page\Settings( $this->plugin ) );
 		$this->add_service( 'page/import', new Page\Import( $this->plugin ) );
@@ -105,6 +120,16 @@ class Admin_Controller implements Registerable, Standard_Service {
 		if ( 'toplevel_page_document_library' === $hook ) {
 			wp_enqueue_style( 'dlw-admin-settings', plugins_url( 'assets/css/admin/document-library-settings.css', $this->plugin->get_file() ), [], $this->plugin->get_version(), 'all' );
 			wp_enqueue_script( 'dlw-admin-settings', plugins_url( 'assets/js/admin/document-library-settings.js', $this->plugin->get_file() ), [ 'jquery' ], $this->plugin->get_version(), true );
+
+			// Artwork for the sale banner. Set here rather than in the stylesheet, so the build doesn't rewrite the paths.
+			wp_add_inline_style(
+				'dlw-admin-settings',
+				sprintf(
+					'#barn2-sale-notice-document-library-lite{--dlw-sale-image-30:url("%1$s");--dlw-sale-image-25:url("%2$s");}',
+					esc_url( $this->plugin->get_dir_url() . 'assets/images/bf2026-30-off.png' ),
+					esc_url( $this->plugin->get_dir_url() . 'assets/images/bf2026-25-off.png' )
+				)
+			);
 		}
 
 		// Import and Protect Page.
